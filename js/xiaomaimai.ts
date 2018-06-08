@@ -166,7 +166,15 @@ class Game{
         this.warehouse = new Warehouse(100);
         this.player = new Player(3000, 0,  100, 100);
         this.dayNum = 1;
-        
+
+    }
+    private deductCash(cashNum:number){
+        if(this.player.cash >= cashNum){
+            this.player.cash -= cashNum;
+        }else{
+            this.player.deposit -= cashNum - this.player.cash;
+            this.player.cash = 0;
+        }
     }
     public buy(item :Item, sum :number){
         let priceSum :number = item.presentPrice * sum;
@@ -179,12 +187,7 @@ class Game{
             console.log(`仓库容量不足, 购买失败`);
             return false;
         }else{
-            if(cash >= priceSum){
-                this.player.cash -= priceSum;
-            }else{
-                this.player.deposit -= priceSum - cash;
-                this.player.cash = 0;
-            }
+            this.deductCash(priceSum);
             this.warehouse.push(item,sum);
         }
     }
@@ -210,6 +213,22 @@ class Game{
         }else{
             this.dayNum += 1;
             this.store.updateShownItem();
+        }
+    }
+    public saveCash(){
+        this.player.deposit += this.player.cash;
+        this.player.cash = 0;
+    }
+    public drawCash(){
+        this.player.cash += this.player.deposit;
+        this.player.deposit = 0;
+    }
+    public buyWarehouse(num){
+        if(100 * num > this.player.cash + this.player.deposit){
+            console.log("金币不足购买这么多的仓库");
+        }else{
+            this.deductCash(100 * num);
+            this.warehouse.warehouseVolume += num;
         }
     }
 }

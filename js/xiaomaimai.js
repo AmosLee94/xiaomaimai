@@ -154,6 +154,15 @@ var Game = /** @class */ (function () {
         this.player = new Player(3000, 0, 100, 100);
         this.dayNum = 1;
     }
+    Game.prototype.deductCash = function (cashNum) {
+        if (this.player.cash >= cashNum) {
+            this.player.cash -= cashNum;
+        }
+        else {
+            this.player.deposit -= cashNum - this.player.cash;
+            this.player.cash = 0;
+        }
+    };
     Game.prototype.buy = function (item, sum) {
         var priceSum = item.presentPrice * sum;
         var cash = this.player.cash;
@@ -167,13 +176,7 @@ var Game = /** @class */ (function () {
             return false;
         }
         else {
-            if (cash >= priceSum) {
-                this.player.cash -= priceSum;
-            }
-            else {
-                this.player.deposit -= priceSum - cash;
-                this.player.cash = 0;
-            }
+            this.deductCash(priceSum);
             this.warehouse.push(item, sum);
         }
     };
@@ -201,6 +204,23 @@ var Game = /** @class */ (function () {
         else {
             this.dayNum += 1;
             this.store.updateShownItem();
+        }
+    };
+    Game.prototype.saveCash = function () {
+        this.player.deposit += this.player.cash;
+        this.player.cash = 0;
+    };
+    Game.prototype.drawCash = function () {
+        this.player.cash += this.player.deposit;
+        this.player.deposit = 0;
+    };
+    Game.prototype.buyWarehouse = function (num) {
+        if (100 * num > this.player.cash + this.player.deposit) {
+            console.log("金币不足购买这么多的仓库");
+        }
+        else {
+            this.deductCash(100 * num);
+            this.warehouse.warehouseVolume += num;
         }
     };
     return Game;
