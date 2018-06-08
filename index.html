@@ -33,8 +33,10 @@
 </head>
 <body>
 <h1>小买卖  <spawn style="font-size:16px;">做小买卖，赚大钱</spawn></h1>
-
 	<div id="xiaomaimai">
+		<div class="gameHead">
+			第{{dayNum}}/52天
+		</div>
 		<div class="store">
 			<table>
 				<tr>
@@ -61,7 +63,7 @@
 					<td>数量</td>
 				</tr>
 				<tr v-for="good in warehouse.goodlist">
-					<td><button>{{good.name}}</button></td>
+					<td><button v-on:click="sell(good,10)">{{good.name}}</button></td>
 					<td>{{good.price}}</td>
 					<td>{{good.sum}}</td>
 				</tr>
@@ -82,7 +84,9 @@
 					<td>{{player.reputation}}</td>
 				</tr>
 			</table>
-			
+		</div>
+		<div class="console">
+			<button @click="nextDay">下一天</button>
 		</div>
 	</div>
 	<script type="text/javascript">
@@ -91,7 +95,9 @@
 			el: '#xiaomaimai',
 			data:game,
 			methods: {
-				buy:game.buy
+				buy:game.buy,
+				sell:game.sell,
+				nextDay:game.nextDay
 			}
 		});
 		console.log(xiaomaimai);

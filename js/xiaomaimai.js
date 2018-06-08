@@ -52,6 +52,14 @@ var Store = /** @class */ (function () {
             // console.log("--------------");
         }
     };
+    Store.prototype.indexOf = function (itemName) {
+        for (var i = 0; i < this.shownItem.length; i++) {
+            if (this.shownItem[i].name == itemName) {
+                return i;
+            }
+        }
+        return -1;
+    };
     return Store;
 }());
 var Good = /** @class */ (function () {
@@ -103,8 +111,24 @@ var Warehouse = /** @class */ (function () {
             this.sum += sum;
         }
     };
-    Warehouse.prototype.test = function (aaa) {
-        console.log(aaa);
+    Warehouse.prototype.unload = function (good, sum) {
+        console.log("good.sum:" + good.sum + ",sum:" + sum);
+        // console.log(item.presentPrice);
+        if (sum > good.sum) {
+            console.log("[error]数据错误，仓库内并没有这么多货物");
+            return false;
+        }
+        else {
+            if (sum == good.sum) {
+                this.goodlist.splice(this.indexOf(good.name), 1);
+                good.sum -= sum;
+            }
+            else {
+                good.sum -= sum;
+            }
+            this.sum -= sum;
+            return true;
+        }
     };
     return Warehouse;
 }());
@@ -128,6 +152,7 @@ var Game = /** @class */ (function () {
         this.store = new Store();
         this.warehouse = new Warehouse(100);
         this.player = new Player(3000, 0, 100, 100);
+        this.dayNum = 1;
     }
     Game.prototype.buy = function (item, sum) {
         var priceSum = item.presentPrice * sum;
@@ -150,6 +175,32 @@ var Game = /** @class */ (function () {
                 this.player.cash = 0;
             }
             this.warehouse.push(item, sum);
+        }
+    };
+    Game.prototype.sell = function (good, sum) {
+        var index = this.store.indexOf(good.name);
+        if (index < 0) {
+            console.log("[error]\u8D27\u7269(" + good.name + ")\u4E0D\u5728\u5C55\u793A\u5546\u54C1\u5217\u8868\u4E2D");
+            return false;
+        }
+        else {
+            console.log("\u5546\u54C1\u4EF7\u683C\uFF1A" + this.store.shownItem[index].presentPrice);
+            if (this.warehouse.unload(good, sum)) {
+                this.player.cash += this.store.shownItem[index].presentPrice * sum;
+            }
+            else {
+                console.log("卸货失败，卖货失败");
+            }
+        }
+    };
+    Game.prototype.nextDay = function () {
+        if (this.dayNum >= 52) {
+            alert("游戏结束");
+            return false;
+        }
+        else {
+            this.dayNum += 1;
+            this.store.updateShownItem();
         }
     };
     return Game;

@@ -58,6 +58,14 @@ class Store{
             // console.log("--------------");
         }
     }
+    public indexOf(itemName:string){
+        for(let i = 0; i < this.shownItem.length; i ++){
+            if(this.shownItem[i].name == itemName){
+                return i;
+            }
+        }
+        return -1;
+    }
 }
 
 class Good{
@@ -112,8 +120,22 @@ class Warehouse{
             this.sum += sum;
         }
     }
-    public test(aaa){
-        console.log(aaa);
+    public unload(good :Good, sum :number){
+        console.log(`good.sum:${good.sum},sum:${sum}`);
+        // console.log(item.presentPrice);
+        if(sum > good.sum){
+            console.log("[error]数据错误，仓库内并没有这么多货物");
+            return false;
+        }else{
+            if(sum == good.sum){
+                this.goodlist.splice(this.indexOf(good.name), 1)
+                good.sum -= sum;
+            }else{
+                good.sum -= sum;
+            }
+            this.sum -= sum;
+            return true;
+        }
     }
 }
 // 玩家信息
@@ -138,12 +160,14 @@ class Game{
     store:Store;
     warehouse :Warehouse;
     player:Player;
+    dayNum:number;
     constructor() {
         this.store = new Store();
         this.warehouse = new Warehouse(100);
         this.player = new Player(3000, 0,  100, 100);
+        this.dayNum = 1;
     }
-    public buy(item,sum){
+    public buy(item :Item, sum :number){
         let priceSum :number = item.presentPrice * sum;
         let cash :number = this.player.cash;
         let deposit :number = this.player.deposit;
@@ -161,6 +185,30 @@ class Game{
                 this.player.cash = 0;
             }
             this.warehouse.push(item,sum);
+        }
+    }
+    public sell(good: Good, sum: number){
+        let index :number = this.store.indexOf(good.name)
+        if(index < 0){//不在展示商品中
+            console.log(`[error]货物(${good.name})不在展示商品列表中`);
+            return false;
+        }else{
+            console.log(`商品价格：${this.store.shownItem[index].presentPrice}`);
+            if (this.warehouse.unload(good, sum)){
+                this.player.cash += this.store.shownItem[index].presentPrice * sum;
+            }else{
+                console.log("卸货失败，卖货失败");
+            }
+
+        }
+    }
+    public nextDay(){
+        if(this.dayNum >= 52){
+            alert("游戏结束");
+            return false;
+        }else{
+            this.dayNum += 1;
+            this.store.updateShownItem();
         }
     }
 }
