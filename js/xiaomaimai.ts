@@ -166,6 +166,7 @@ class Game{
         this.warehouse = new Warehouse(100);
         this.player = new Player(3000, 0,  100, 100);
         this.dayNum = 1;
+        
     }
     public buy(item :Item, sum :number){
         let priceSum :number = item.presentPrice * sum;
