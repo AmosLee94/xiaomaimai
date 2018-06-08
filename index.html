@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<script type="text/javascript" src="./js/vue.js"></script>
+	<script type="text/javascript" src="./js/xiaomaimai.js"></script>
+	<style type="text/css">
+		#xiaomaimai{
+			text-align: center;	
+			width: 350px;
+			background-color: #f55;
+		}
+		.store{
+			float: left;
+			width: 45%;
+			background-color: #5ff;
+		}
+		.warehouse{
+			float: right;
+			width: 55%;
+			background-color: #ff5;
+		}
+		.player{
+			width: 100%;
+			background-color: #f5f;
+			clear: both;
+		}
+		table{
+			margin: auto;
+			/* text-align: center;	 */
+		}
+	</style>
+</head>
+<body>
+<h1>小买卖  <spawn style="font-size:16px;">做小买卖，赚大钱</spawn></h1>
+
+	<div id="xiaomaimai">
+		<div class="store">
+			<table>
+				<tr>
+					<th colspan="2">市场</td>
+				</tr>
+				<tr>
+					<td>货物</td>
+					<td>价格</td>
+				</tr>
+				<tr v-for="item in store.shownItem">
+						<td><button v-on:click="buy(item,10)">{{item.name}}</button></td>
+						<td>{{item.presentPrice}}</td>
+				</tr>
+			</table>
+		</div>
+		<div class="warehouse">
+			<table>
+				<tr>
+					<th colspan="3">出租屋({{warehouse.sum}}/{{warehouse.warehouseVolume}})</td>
+				</tr>
+				<tr>
+					<td>货物</td>
+					<td>成本</td>
+					<td>数量</td>
+				</tr>
+				<tr v-for="good in warehouse.goodlist">
+					<td><button>{{good.name}}</button></td>
+					<td>{{good.price}}</td>
+					<td>{{good.sum}}</td>
+				</tr>
+			</table>
+		</div>
+		<div class="player">
+			<table>
+				<tr>
+					<td>现金：</td>
+					<td>{{player.cash}}</td>
+					<td>健康：</td>
+					<td>{{player.health}}</td>
+				</tr>
+				<tr>
+					<td>存款：</td>
+					<td>{{player.deposit}}</td>
+					<td>名声：</td>
+					<td>{{player.reputation}}</td>
+				</tr>
+			</table>
+			
+		</div>
+	</div>
+	<script type="text/javascript">
+		var game = new Game();
+		var xiaomaimai = new Vue({
+			el: '#xiaomaimai',
+			data:game,
+			methods: {
+				buy:game.buy
+			}
+		});
+		console.log(xiaomaimai);
+		// game.player.cash = 3000;
+		console.log(game);
+		// game.warehouse.push(game.store.shownItem[1], 10);
+		// // game.store.updateShownItem();
+		// game.warehouse.push(game.store.shownItem[2], 34);
+		// game.store.updateShownItem();
+		// game.warehouse.push(game.store.shownItem[2], 34);
+		// console.log(game.buy);
+	</script>
+</body>
+</html>
