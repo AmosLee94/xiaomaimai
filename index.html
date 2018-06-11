@@ -6,25 +6,26 @@
 	<script type="text/javascript" src="./js/xiaomaimai.js"></script>
 	<style type="text/css">
 		#xiaomaimai{
+			margin: 80px auto ;
 			font-family: 仿宋;
 			user-select: none;
 			text-align: center;	
 			width: 350px;
-			background-color: #f55;
+			background-color: rgba(127, 236, 213, 0.356);
 		}
 		.store{
 			float: left;
 			width: 45%;
-			background-color: #5ff;
+			/* background-color: #5ff; */
 		}
 		.warehouse{
 			float: right;
 			width: 55%;
-			background-color: #ff5;
+			/* background-color: #ff5; */
 		}
 		.player{
 			width: 100%;
-			background-color: #55f;
+			/* background-color: #55f; */
 			clear: both;
 		}
 		table{
@@ -38,11 +39,11 @@
 	</style>
 </head>
 <body>
-<h1>小买卖</h1>
 <!-- <spawn style="font-size:16px;">做小买卖，赚大钱</spawn> -->
 	<div id="xiaomaimai">
+			<h1>小买卖</h1>
 		<div class="gameHead">
-			第{{dayNum}}/52天
+			第{{dayNum}}/{{dateLine}}天
 		</div>
 		<div class="store">
 			<table>
@@ -54,7 +55,7 @@
 					<td>价格</td>
 				</tr>
 				<tr v-for="item in store.shownItem">
-						<td><button v-on:click="buy(item,1)">{{item.name}}</button></td>
+						<td><button @click="buy(item,1)">{{item.name}}</button></td>
 						<td>{{item.presentPrice}}</td>
 				</tr>
 			</table>
@@ -62,7 +63,7 @@
 		<div class="warehouse">
 			<table>
 				<tr>
-					<th colspan="3">出租屋({{warehouse.sum}}/{{warehouse.warehouseVolume}})</td>
+					<th colspan="3">仓库空间({{warehouse.sum}}/{{warehouse.warehouseVolume}})</td>
 				</tr>
 				<tr>
 					<td>货物</td>
@@ -70,7 +71,7 @@
 					<td>数量</td>
 				</tr>
 				<tr v-for="good in warehouse.goodlist">
-					<td><button v-on:click="sell(good,1)">{{good.name}}</button></td>
+					<td><button @click="sell(good,1)">{{good.name}}</button></td>
 					<td>{{good.price}}</td>
 					<td>{{good.sum}}</td>
 				</tr>
@@ -80,7 +81,7 @@
 			<table>
 				<tr>
 					<td>现金：</td>
-					<td>{{player.cash}}</td>
+					<td>{{cash}}</td>
 					<td>健康：</td>
 					<td>{{player.health}}</td>
 				</tr>
@@ -101,6 +102,10 @@
 	</div>
 	<script type="text/javascript">
 		var game = new Game();
+		
+		// game.player.cash = 1803151608940168700;
+		// game.player.cash = 168700;
+		// game.dayNum = 255;
 		var xiaomaimai = new Vue({
 			el: '#xiaomaimai',
 			data:game,
@@ -112,11 +117,30 @@
 				drawCash:game.drawCash,
 				buyWarehouse:game.buyWarehouse,
 				deductCash:game.deductCash
+			},
+			computed: {
+				cash: function () {
+					var cash = this.player.cash
+					if(cash >= 1000000000000){
+						cash /= 1000000000000;
+						cash = parseInt(cash);
+						cash += "亿万";
+					}else if(cash >= 100000000){
+						cash /= 100000000;
+						cash = parseInt(cash);
+						cash += "亿";
+					}else if(cash >= 10000){
+						cash /= 10000;
+						cash = parseInt(cash);
+						cash += "万";
+					}
+					return cash + "元";
+				}
 			}
 		});
-		console.log(xiaomaimai);
+		// console.log(xiaomaimai);
 		// game.player.cash = 3000;
-		console.log(game);
+		// console.log(game);
 		// game.warehouse.push(game.store.shownItem[1], 10);
 		// // game.store.updateShownItem();
 		// game.warehouse.push(game.store.shownItem[2], 34);

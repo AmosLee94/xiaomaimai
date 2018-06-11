@@ -24,7 +24,15 @@ class Store{
     public shownItemSum:number;
     constructor() {
         this.shownItemSum = 5;
-        this.allItem = [new Item("大白菜", 5, 20), new Item("大汽车", 1000, 3000), new Item("小灵通", 200, 400), new Item("小山羊", 2000, 3000), new Item("胡萝卜", 5, 30), new Item("爱疯叉", 8000, 15000), new Item("大冰箱", 8000, 30000)];
+        this.allItem = [
+            new Item("大白菜", 5, 20),
+            new Item("大汽车", 15000, 35000),
+            new Item("小灵通", 200, 400),
+            new Item("小山羊", 800, 1500),
+            new Item("胡萝卜", 5, 30),
+            new Item("爱疯叉", 8000, 15000),
+            new Item("大冰箱", 8000, 30000)
+        ];
         console.log("----------");
         this.shownItem = [];
         this.updateShownItem();
@@ -46,8 +54,7 @@ class Store{
             for (let i = 0; i < shownItemSum; i ++){
                 let newId : number;
                 do {
-                    
-                    newId = ~~(Math.random() * shownItemSum);
+                    newId = ~~(Math.random() * allItemSum);
                 } while (shownItemIds.indexOf(newId) > -1);
                 shownItemIds.push(newId);
                 // console.log(this.shownItem);
@@ -161,11 +168,13 @@ class Game{
     warehouse :Warehouse;
     player:Player;
     dayNum:number;
+    dateLine:number;
     constructor() {
         this.store = new Store();
         this.warehouse = new Warehouse(100);
         this.player = new Player(3000, 0,  100, 100);
         this.dayNum = 1;
+        this.dateLine = 365;
 
     }
     private deductCash(cashNum:number){
@@ -176,30 +185,45 @@ class Game{
             this.player.cash = 0;
         }
     }
-    public buy(item :Item, sum :number){
-        let priceSum :number = item.presentPrice * sum;
+    public buy(item :Item){
         let cash :number = this.player.cash;
         let deposit :number = this.player.deposit;
-        if(cash + deposit < priceSum){
-            console.log(`现金(${cash})和存款(${deposit})共${cash + deposit},不足支付货物(${item.name} * ${sum})的货款(${item.presentPrice * sum}), 购买失败`);
-            return false;
-        }else if(this.warehouse.sum + sum > this.warehouse.warehouseVolume){
-            console.log(`仓库容量不足, 购买失败`);
-            return false;
-        }else{
-            this.deductCash(priceSum);
-            this.warehouse.push(item,sum);
+        let warehouseSurplus = this.warehouse.warehouseVolume - this.warehouse.sum;
+        let maxPurchase = parseInt((((cash + deposit)/item.presentPrice)).toString()); 
+        
+        // console.log(warehouseSurplus +':'+maxPurchase);
+        // console.log(`cash: ${cash}, deposit: ${deposit}, warehouseSurplus: ${warehouseSurplus}, maxPurchase: ${maxPurchase}`);
+        
+        maxPurchase = maxPurchase <= warehouseSurplus ? maxPurchase:warehouseSurplus;
+        let sum: number = parseInt(prompt(`请输入你想购买的数量(最多可以购买${maxPurchase})`,maxPurchase.toString())) ;
+        if(isNum(sum)){
+            let priceSum :number = item.presentPrice * sum;
+            if(cash + deposit < priceSum){
+                console.log(`现金(${cash})和存款(${deposit})共${cash + deposit},不足支付货物(${item.name} * ${sum})的货款(${item.presentPrice * sum}), 购买失败`);
+                return false;
+            }else if(this.warehouse.sum + sum > this.warehouse.warehouseVolume){
+                console.log(`仓库容量不足, 购买失败`);
+                return false;
+            }else{
+                this.deductCash(priceSum);
+                this.warehouse.push(item,sum);
+            }
+            
         }
     }
-    public sell(good: Good, sum: number){
+    public sell(good: Good){
         let index :number = this.store.indexOf(good.name)
         if(index < 0){//不在展示商品中
             console.log(`[error]货物(${good.name})不在展示商品列表中`);
             return false;
         }else{
-            console.log(`商品价格：${this.store.shownItem[index].presentPrice}`);
+            let price = this.store.shownItem[index].presentPrice;
+            let sum: number = parseInt(prompt(`请输入你想出售的数量(最多可以出售${good.sum})`,good.sum.toString())) ;
+            console.log("sum               "+sum);
+            console.log(`商品价格：${price}`);
+            if(isNum(sum))
             if (this.warehouse.unload(good, sum)){
-                this.player.cash += this.store.shownItem[index].presentPrice * sum;
+                this.player.cash += price * sum;
             }else{
                 console.log("卸货失败，卖货失败");
             }
@@ -207,7 +231,7 @@ class Game{
         }
     }
     public nextDay(){
-        if(this.dayNum >= 52){
+        if(this.dayNum >= this.dateLine){
             alert("游戏结束");
             return false;
         }else{
@@ -223,16 +247,27 @@ class Game{
         this.player.cash += this.player.deposit;
         this.player.deposit = 0;
     }
-    public buyWarehouse(num){
-        if(100 * num > this.player.cash + this.player.deposit){
-            console.log("金币不足购买这么多的仓库");
-        }else{
-            this.deductCash(100 * num);
-            this.warehouse.warehouseVolume += num;
-        }
+    public buyWarehouse(){
+        let price = 100;
+        
+        let maxPurchase = parseInt(((this.player.cash + this.player.deposit)/price/2).toString()); 
+        let sum: number = parseInt(prompt(`请输入你想出售的数量(最多可以出售${maxPurchase})`,maxPurchase.toString())) ;
+        if(isNum(sum))
+            if(price * sum > this.player.cash + this.player.deposit){
+                console.log("金币不足购买这么多的仓库");
+            }else{
+                this.deductCash(price * sum);
+                this.warehouse.warehouseVolume += sum;
+            }
     }
 }
-// let game = new Game();
+function isNum(s:any){
+    return (s!=null && s!="")?!isNaN(s):false;
+}
+
+
+let game = new Game();
+
 // console.log(game.buy);
 // game.buy(game.store.shownItem[0],10);
 // console.log(game);
