@@ -101,13 +101,10 @@
 				<button @click="nextDay">下一天</button>
 				<button @click="buyWarehouse(1)">扩张</button>
 		</div>
+
 	</div>
 	<script type="text/javascript">
 		var game = new Game();
-		
-		// game.player.cash = 1803151608940168700;
-		// game.player.cash = 168700;
-		// game.dayNum = 255;
 		var xiaomaimai = new Vue({
 			el: '#xiaomaimai',
 			data:game,
@@ -140,15 +137,6 @@
 				}
 			}
 		});
-		// console.log(xiaomaimai);
-		// game.player.cash = 3000;
-		// console.log(game);
-		// game.warehouse.push(game.store.shownItem[1], 10);
-		// // game.store.updateShownItem();
-		// game.warehouse.push(game.store.shownItem[2], 34);
-		// game.store.updateShownItem();
-		// game.warehouse.push(game.store.shownItem[2], 34);
-		// console.log(game.buy);
 	</script>
 </body>
 </html>

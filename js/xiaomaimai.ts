@@ -1,3 +1,6 @@
+function isNum(s:any){
+    return (s!=null && s!="")?!isNaN(s):false;
+}
 // 商品：
 //     名称
 //     最低价
@@ -74,7 +77,6 @@ class Store{
         return -1;
     }
 }
-
 class Good{
     public name:string;
     public price: number;
@@ -175,7 +177,6 @@ class Game{
         this.player = new Player(3000, 0,  100, 100);
         this.dayNum = 1;
         this.dateLine = 365;
-
     }
     private deductCash(cashNum:number){
         if(this.player.cash >= cashNum){
@@ -190,10 +191,8 @@ class Game{
         let deposit :number = this.player.deposit;
         let warehouseSurplus = this.warehouse.warehouseVolume - this.warehouse.sum;
         let maxPurchase = parseInt((((cash + deposit)/item.presentPrice)).toString()); 
-        
         // console.log(warehouseSurplus +':'+maxPurchase);
         // console.log(`cash: ${cash}, deposit: ${deposit}, warehouseSurplus: ${warehouseSurplus}, maxPurchase: ${maxPurchase}`);
-        
         maxPurchase = maxPurchase <= warehouseSurplus ? maxPurchase:warehouseSurplus;
         let sum: number = parseInt(prompt(`请输入你想购买的数量(最多可以购买${maxPurchase})`,maxPurchase.toString())) ;
         if(isNum(sum)){
@@ -208,7 +207,6 @@ class Game{
                 this.deductCash(priceSum);
                 this.warehouse.push(item,sum);
             }
-            
         }
     }
     public sell(good: Good){
@@ -227,7 +225,6 @@ class Game{
             }else{
                 console.log("卸货失败，卖货失败");
             }
-
         }
     }
     public nextDay(){
@@ -249,9 +246,8 @@ class Game{
     }
     public buyWarehouse(){
         let price = 100;
-        
-        let maxPurchase = parseInt(((this.player.cash + this.player.deposit)/price/2).toString()); 
-        let sum: number = parseInt(prompt(`请输入你想出售的数量(最多可以出售${maxPurchase})`,maxPurchase.toString())) ;
+        let maxPurchase = parseInt(((this.player.cash + this.player.deposit)/price).toString()); 
+        let sum: number = parseInt(prompt(`请输入你想购买仓库的数量(最多可以购买${maxPurchase})`,parseInt((maxPurchase/2).toString()).toString())) ;
         if(isNum(sum))
             if(price * sum > this.player.cash + this.player.deposit){
                 console.log("金币不足购买这么多的仓库");
@@ -261,21 +257,3 @@ class Game{
             }
     }
 }
-function isNum(s:any){
-    return (s!=null && s!="")?!isNaN(s):false;
-}
-
-
-let game = new Game();
-
-// console.log(game.buy);
-// game.buy(game.store.shownItem[0],10);
-// console.log(game);
-// game.warehouse.push(game.store.shownItem[1], 10);
-// game.store.updateShownItem();
-// game.warehouse.push(game.store.shownItem[2], 34);
-// game.store.updateShownItem();
-// game.warehouse.push(game.store.shownItem[2], 32);
-
-// console.log(game);
-// console.log(Math);

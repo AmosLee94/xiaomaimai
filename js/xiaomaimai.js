@@ -1,3 +1,6 @@
+function isNum(s) {
+    return (s != null && s != "") ? !isNaN(s) : false;
+}
 // 商品：
 //     名称
 //     最低价
@@ -237,8 +240,8 @@ var Game = /** @class */ (function () {
     };
     Game.prototype.buyWarehouse = function () {
         var price = 100;
-        var maxPurchase = parseInt(((this.player.cash + this.player.deposit) / price / 2).toString());
-        var sum = parseInt(prompt("\u8BF7\u8F93\u5165\u4F60\u60F3\u51FA\u552E\u7684\u6570\u91CF(\u6700\u591A\u53EF\u4EE5\u51FA\u552E" + maxPurchase + ")", maxPurchase.toString()));
+        var maxPurchase = parseInt(((this.player.cash + this.player.deposit) / price).toString());
+        var sum = parseInt(prompt("\u8BF7\u8F93\u5165\u4F60\u60F3\u8D2D\u4E70\u4ED3\u5E93\u7684\u6570\u91CF(\u6700\u591A\u53EF\u4EE5\u8D2D\u4E70" + maxPurchase + ")", parseInt((maxPurchase / 2).toString()).toString()));
         if (isNum(sum))
             if (price * sum > this.player.cash + this.player.deposit) {
                 console.log("金币不足购买这么多的仓库");
@@ -250,17 +253,3 @@ var Game = /** @class */ (function () {
     };
     return Game;
 }());
-function isNum(s) {
-    return (s != null && s != "") ? !isNaN(s) : false;
-}
-var game = new Game();
-// console.log(game.buy);
-// game.buy(game.store.shownItem[0],10);
-// console.log(game);
-// game.warehouse.push(game.store.shownItem[1], 10);
-// game.store.updateShownItem();
-// game.warehouse.push(game.store.shownItem[2], 34);
-// game.store.updateShownItem();
-// game.warehouse.push(game.store.shownItem[2], 32);
-// console.log(game);
-// console.log(Math); 
