@@ -6,15 +6,16 @@ function isNum(s) {
 //     最低价
 //     最高价
 var Item = /** @class */ (function () {
-    function Item(name, minPrice, maxPrice) {
+    function Item(name, minPrice, maxPrice, size) {
         this.name = name;
         this.minPrice = minPrice;
         this.maxPrice = maxPrice;
+        this.size = size;
         this.updatePrice();
     }
     Item.prototype.updatePrice = function () {
-        this.presentPrice = Math.round(this.minPrice + (this.maxPrice - this.minPrice) * Math.random());
-        console.log("name: " + this.name + ", presentPrice: " + this.presentPrice);
+        this.price = Math.round(this.minPrice + (this.maxPrice - this.minPrice) * Math.random());
+        console.log("name: " + this.name + ", price: " + this.price);
     };
     return Item;
 }());
@@ -22,15 +23,14 @@ var Store = /** @class */ (function () {
     function Store() {
         this.shownItemSum = 5;
         this.allItem = [
-            new Item("大白菜", 5, 20),
-            new Item("大汽车", 15000, 35000),
-            new Item("小灵通", 200, 400),
-            new Item("小山羊", 800, 1500),
-            new Item("胡萝卜", 5, 30),
-            new Item("爱疯叉", 8000, 15000),
-            new Item("大冰箱", 8000, 30000)
+            new Item("大白菜", 5, 20, 4),
+            new Item("大汽车", 15000, 35000, 10000),
+            new Item("小灵通", 200, 400, 2),
+            new Item("小山羊", 800, 1500, 1000),
+            new Item("胡萝卜", 5, 30, 1),
+            new Item("爱疯叉", 8000, 15000, 2),
+            new Item("大冰箱", 8000, 30000, 5000)
         ];
-        console.log("----------");
         this.shownItem = [];
         this.updateShownItem();
     }
@@ -45,7 +45,6 @@ var Store = /** @class */ (function () {
             }
         }
         else {
-            console.log("--------------");
             this.shownItem = [];
             var shownItemIds = [];
             var shownItemSum_1 = this.shownItemSum;
@@ -60,7 +59,6 @@ var Store = /** @class */ (function () {
                 this.allItem[newId].updatePrice();
             }
             // console.log(this.shownItem.length);
-            // console.log("--------------");
         }
     };
     Store.prototype.indexOf = function (itemName) {
@@ -74,10 +72,11 @@ var Store = /** @class */ (function () {
     return Store;
 }());
 var Good = /** @class */ (function () {
-    function Good(name, price, sum) {
+    function Good(name, price, sum, size) {
         this.name = name;
         this.price = price;
         this.sum = sum;
+        this.size = size;
     }
     return Good;
 }());
@@ -96,35 +95,35 @@ var Warehouse = /** @class */ (function () {
         return -1;
     };
     Warehouse.prototype.push = function (item, sum) {
-        // console.log(item.presentPrice);
-        if (this.sum + sum > this.warehouseVolume) {
+        // console.log(item.price);
+        if (this.sum + sum * item.size > this.warehouseVolume) {
             console.log("[error]仓库存不下，拒绝入库");
         }
         else {
             var goodIndex = this.indexOf(item.name);
             if (goodIndex == -1) {
                 // 仓库里还没有这个货物
-                var newGood = new Good(item.name, item.presentPrice, sum);
+                var newGood = new Good(item.name, item.price, sum, item.size);
                 this.goodlist.push(newGood);
-                console.log("name:" + item.name + ",  price:" + item.presentPrice + ", sum:" + sum + ", ");
+                console.log("name:" + item.name + ",  price:" + item.price + ", sum:" + sum + ", ");
             }
             else {
                 //仓库已有这个货物
                 var priceA = this.goodlist[goodIndex].price;
                 var sumA = this.goodlist[goodIndex].sum;
-                var priceB = item.presentPrice;
+                var priceB = item.price;
                 var sumB = sum;
                 console.log("priceA:" + priceA + ",sumA:" + sumA + ",priceB:" + priceB + ",sumB:" + sumB);
                 this.goodlist[goodIndex].price = Math.round((priceA * sumA + priceB * sumB) / (sumA + sumB));
                 this.goodlist[goodIndex].sum = sumA + sumB;
                 console.log("name:" + item.name + ",  price:" + this.goodlist[goodIndex].price + ", sum:" + this.goodlist[goodIndex].sum + ", ");
             }
-            this.sum += sum;
+            this.sum += sum * item.size;
         }
     };
     Warehouse.prototype.unload = function (good, sum) {
         console.log("good.sum:" + good.sum + ",sum:" + sum);
-        // console.log(item.presentPrice);
+        // console.log(item.price);
         if (sum > good.sum) {
             console.log("[error]数据错误，仓库内并没有这么多货物");
             return false;
@@ -161,7 +160,7 @@ var Player = /** @class */ (function () {
 var Game = /** @class */ (function () {
     function Game() {
         this.store = new Store();
-        this.warehouse = new Warehouse(100);
+        this.warehouse = new Warehouse(10000);
         this.player = new Player(3000, 0, 100, 100);
         this.dayNum = 1;
         this.dateLine = 365;
@@ -179,15 +178,15 @@ var Game = /** @class */ (function () {
         var cash = this.player.cash;
         var deposit = this.player.deposit;
         var warehouseSurplus = this.warehouse.warehouseVolume - this.warehouse.sum;
-        var maxPurchase = parseInt((((cash + deposit) / item.presentPrice)).toString());
+        var maxPurchase = parseInt((((cash + deposit) / item.price)).toString());
         // console.log(warehouseSurplus +':'+maxPurchase);
         // console.log(`cash: ${cash}, deposit: ${deposit}, warehouseSurplus: ${warehouseSurplus}, maxPurchase: ${maxPurchase}`);
         maxPurchase = maxPurchase <= warehouseSurplus ? maxPurchase : warehouseSurplus;
         var sum = parseInt(prompt("\u8BF7\u8F93\u5165\u4F60\u60F3\u8D2D\u4E70\u7684\u6570\u91CF(\u6700\u591A\u53EF\u4EE5\u8D2D\u4E70" + maxPurchase + ")", maxPurchase.toString()));
         if (isNum(sum)) {
-            var priceSum = item.presentPrice * sum;
+            var priceSum = item.price * sum;
             if (cash + deposit < priceSum) {
-                console.log("\u73B0\u91D1(" + cash + ")\u548C\u5B58\u6B3E(" + deposit + ")\u5171" + (cash + deposit) + ",\u4E0D\u8DB3\u652F\u4ED8\u8D27\u7269(" + item.name + " * " + sum + ")\u7684\u8D27\u6B3E(" + item.presentPrice * sum + "), \u8D2D\u4E70\u5931\u8D25");
+                console.log("\u73B0\u91D1(" + cash + ")\u548C\u5B58\u6B3E(" + deposit + ")\u5171" + (cash + deposit) + ",\u4E0D\u8DB3\u652F\u4ED8\u8D27\u7269(" + item.name + " * " + sum + ")\u7684\u8D27\u6B3E(" + item.price * sum + "), \u8D2D\u4E70\u5931\u8D25");
                 return false;
             }
             else if (this.warehouse.sum + sum > this.warehouse.warehouseVolume) {
@@ -207,7 +206,7 @@ var Game = /** @class */ (function () {
             return false;
         }
         else {
-            var price = this.store.shownItem[index].presentPrice;
+            var price = this.store.shownItem[index].price;
             var sum = parseInt(prompt("\u8BF7\u8F93\u5165\u4F60\u60F3\u51FA\u552E\u7684\u6570\u91CF(\u6700\u591A\u53EF\u4EE5\u51FA\u552E" + good.sum + ")", good.sum.toString()));
             console.log("sum               " + sum);
             console.log("\u5546\u54C1\u4EF7\u683C\uFF1A" + price);
@@ -253,3 +252,6 @@ var Game = /** @class */ (function () {
     };
     return Game;
 }());
+var game = new Game();
+console.log(game);
+//# sourceMappingURL=xiaomaimai.js.map

@@ -10,18 +10,18 @@
 			font-family: 仿宋;
 			user-select: none;
 			text-align: center;	
-			width: 550px;
+			width: 650px;
 			background-color: rgba(127, 236, 213, 0.356);
 			font-size: 22px;
 		}
 		.store{
 			float: left;
-			width: 45%;
+			width: 50%;
 			/* background-color: #5ff; */
 		}
 		.warehouse{
 			float: right;
-			width: 55%;
+			width: 50%;
 			/* background-color: #ff5; */
 		}
 		.player{
@@ -50,15 +50,18 @@
 		<div class="store">
 			<table>
 				<tr>
-					<th colspan="2">市场</td>
+					<th colspan="3">市场</td>
 				</tr>
 				<tr>
 					<td>货物</td>
 					<td>价格</td>
+					<td>占用空间</td>
 				</tr>
 				<tr v-for="item in store.shownItem">
 						<td><button @click="buy(item,1)">{{item.name}}</button></td>
-						<td>{{item.presentPrice}}</td>
+						<td>{{item.price}}</td>
+						<td>{{item.size}}</td>
+						
 				</tr>
 			</table>
 		</div>
@@ -133,10 +136,11 @@
 						cash = parseInt(cash);
 						cash += "万";
 					}
-					return cash + "元";
+					return cash;
 				}
 			}
 		});
+		console.log(game);
 	</script>
 </body>
 </html>
